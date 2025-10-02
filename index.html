@@ -106,7 +106,10 @@
         { name: "Alex King", role: "Owner | Budget & Efficiency Specialist", specialty: "Goverment Apartments, Custom Layouts, Small/Tiny Houses", contact: "999-999-9999", icon: "crown" },
         { name: "Hiring Now!", role: "Commercial Design Manager", specialty: "Live-In Businesses, Hidden Spaces, Retail Spaces, Branding Integration", contact: "Apply Now!", icon: "store" },
         { name: "Hiring Now!", role: "Lead Architect", specialty: "Affordable Housing, Efficient Layouts, Warehouse Design", contact: "Apply Now!", icon: "house" },
-		{ name: "Hiring Now!", role: "General manager", specialty: "Hiring Staff, Creating Advertisments, Marketing", contact: "Apply Now!", icon: "router" }
+		{ name: "Hiring Now!", role: "General manager", specialty: "Hiring Staff, Creating Advertisments, Marketing", contact: "Apply Now!", icon: "router" },
+		{ name: "Hiring Now!", role: "Junior Designer", specialty: "Learning, Around Frequently, Budget Layouts", contact: "Apply Now!", icon: "house-heart" },
+		{ name: "Hiring Now!", role: "Junior Designer", specialty: "Learning, Around Frequently, Budget Layouts", contact: "Apply Now!", icon: "house-heart" },
+		{ name: "Hiring Now!", role: "Junior Designer", specialty: "Learning, Around Frequently, Budget Layouts", contact: "Apply Now!", icon: "house-heart" }
     ];
 
     // --- UTILITY & MODAL FUNCTIONS (Moved to global scope) ---
@@ -827,7 +830,7 @@
             <section id="admin-auth" class="max-w-md mx-auto space-y-6">
                 <h2 class="text-4xl font-extrabold text-yellow-500 text-center">Admin Login</h2>
                 <div class="bg-gray-800 p-8 rounded-2xl shadow-xl border border-gray-700 space-y-4">
-                    <p class="text-gray-400">Sign in with your Supabase Admin email and password to manage projects.</p>
+                    <p class="text-gray-400">Sign in with your email and password to manage projects.</p>
                     <form id="admin-login-form" onsubmit="event.preventDefault(); attemptAdminLogin();">
                         <div>
                             <label for="admin-email" class="block text-sm font-medium text-gray-300 mb-1">Email</label>
@@ -844,7 +847,7 @@
                     </form>
                 </div>
                 <p class="text-center text-gray-500 text-sm">
-                    Note: You must first create a user in your Supabase Auth panel to sign in.
+                    Note: You must first create a user in your with the owner to sign in.
                 </p>
             </section>
         `;
@@ -1124,3 +1127,4 @@
 
 </body>
 </html>
+
