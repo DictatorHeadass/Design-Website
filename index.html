@@ -9,16 +9,13 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
     <style>
-        /* Set Inter font globally */
-        /* FIX: Corrected misspelled URL */
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
         body {
             font-family: 'Inter', sans-serif;
             background-color: #0d0d0d;
-            color: #e5e7eb; /* Light gray text */
+            color: #e5e7eb;
             min-height: 100vh;
         }
-        /* Custom scrollbar for a sleek look */
         ::-webkit-scrollbar {
             width: 8px;
         }
@@ -43,7 +40,6 @@
                 <nav class="flex space-x-4" id="main-nav">
                     <button onclick="navigate('home')" class="nav-link text-gray-300 hover:text-yellow-400 px-3 py-2 rounded-md text-sm font-medium transition duration-150" data-page="home">Home</button>
                     <button onclick="navigate('showcase')" class="nav-link text-gray-300 hover:text-yellow-400 px-3 py-2 rounded-md text-sm font-medium transition duration-150" data-page="showcase">Showcase</button>
-                    <!-- NEW: Application Button -->
                     <button onclick="navigate('application')" class="nav-link text-gray-300 hover:text-yellow-400 px-3 py-2 rounded-md text-sm font-medium transition duration-150" data-page="application">Apply</button>
                     <button onclick="navigate('contact')" class="nav-link text-gray-300 hover:text-yellow-400 px-3 py-2 rounded-md text-sm font-medium transition duration-150" data-page="contact">Contact Staff</button>
                     <button onclick="navigate('admin')" class="nav-link text-gray-300 hover:text-yellow-400 px-3 py-2 rounded-md text-sm font-medium transition duration-150 flex items-center" data-page="admin" id="admin-nav-button">
@@ -76,32 +72,27 @@
     </div>
 
 <script>
-    // --- GLOBAL SUPABASE/APP STATE ---
-    // Functions referenced in HTML onclick MUST be globally defined for immediate access
+
     let supabase = null;
-    let userId = 'public-view'; // Tracks the current user, updated on auth state change
-    let projects = []; // The single source of truth for projects
+    let userId = 'public-view';
+    let projects = [];
     let currentPage = 'home';
-    let isAdminAuthenticated = false; // Controls access to admin forms
-    let currentImageIndex = 0; // NEW: For image slideshow in modal
+    let isAdminAuthenticated = false; 
+    let currentImageIndex = 0; 
     
-    // FIX: Updated with user's credentials
     const SUPABASE_URL = "https://zpdixrsjtrmnlccohqgv.supabase.co"; 
     const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpwZGl4cnNqdHJtbmxjY29ocWd2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTkzMTcwOTEsImV4cCI6MjA3NDg5MzA5MX0.v6o-tjyipVY5piR-FVVCYv-3guT_jLih0l5a8G_g51Q";
     const TABLE_NAME = 'showcase_projects';
     
-    // NEW: Discord Webhook URL
     const DISCORD_WEBHOOK_URL = "https://discord.com/api/webhooks/1423215994867814461/0wpi5qyx3oXuWZTwXoE15KakGbpNEHuqSz7PDNkp7Xepi8U1uj3j9rnhOzqahYGf303Q";
 
 
-    // DOM Elements
     const appContainer = document.getElementById('app-container');
     const modal = document.getElementById('project-modal');
     const modalTitle = document.getElementById('modal-title');
     const modalContent = document.getElementById('modal-content');
     
-    // --- MOCK STAFF DATA (Client-side constant) ---
-    // FIX: Corrected staff names back to user's specification
+
     const MOCK_STAFF = [
         { name: "Alex King", role: "Owner | Budget & Efficiency Specialist", specialty: "Goverment Apartments, Custom Layouts, Small/Tiny Houses", contact: "940-584-1911", icon: "crown" },
         { name: "Hiring Now!", role: "Commercial Design Manager", specialty: "Live-In Businesses, Hidden Spaces, Retail Spaces, Branding Integration", contact: "Apply Now!", icon: "store" },
@@ -114,7 +105,6 @@
 		{ name: "Hiring Now!", role: "Junior Designer", specialty: "Learning, Around Frequently, Budget Layouts", contact: "Apply Now!", icon: "house-heart" }
     ];
 
-    // --- UTILITY & MODAL FUNCTIONS (Moved to global scope) ---
 
     function showLoading(show) {
         const loadingIndicator = document.getElementById('loading-indicator');
@@ -155,7 +145,7 @@
         };
         modal.classList.remove('hidden');
         document.body.classList.add('overflow-hidden');
-        renderIcons(); // Ensure icons within the modal are rendered
+        renderIcons();
     }
 
     function closeModal(event) {
@@ -166,7 +156,6 @@
         modalContent.innerHTML = '';
     }
     
-    // --- SLIDESHOW LOGIC (NEW) ---
 
     function showImage(imageUrls) {
         const imageContainer = document.getElementById('image-slideshow-container');
@@ -176,7 +165,6 @@
         
         if (!imageContainer || imageUrls.length === 0) return;
 
-        // Update the image source
         imageContainer.innerHTML = `
             <img src="${imageUrls[currentImageIndex]}" 
                  alt="Project Image ${currentImageIndex + 1}" 
@@ -184,15 +172,12 @@
                  onerror="this.onerror=null;this.src='https://placehold.co/800x600/374151/9ca3af?text=Image+Unavailable';" />
         `;
         
-        // Update counter
         counterElement.textContent = `Image ${currentImageIndex + 1} of ${imageUrls.length}`;
 
-        // Update button visibility
         prevButton.classList.toggle('hidden', currentImageIndex === 0);
         nextButton.classList.toggle('hidden', currentImageIndex === imageUrls.length - 1);
     }
 
-    // Global functions for buttons
     window.nextImage = (imageUrls) => {
         if (currentImageIndex < imageUrls.length - 1) {
             currentImageIndex++;
@@ -207,7 +192,6 @@
         }
     };
     
-    // --- DISCORD WEBHOOK INQUIRY FUNCTION ---
     async function submitInquiry(event) {
         event.preventDefault();
         const form = event.target;
@@ -226,7 +210,7 @@
             embeds: [
                 {
                     title: `New Inquiry: ${type}`,
-                    color: 16761600, // Yellow color code
+                    color: 16761600,
                     fields: [
                         { name: "Client Name", value: name, inline: true },
                         { name: "Contact Info", value: contact, inline: true },
@@ -267,7 +251,6 @@
         }
     }
 
-    // NEW: DISCORD WEBHOOK APPLICATION FUNCTION
     async function submitApplication(event) {
         event.preventDefault();
         const form = event.target;
@@ -287,7 +270,7 @@
             embeds: [
                 {
                     title: `New Staff Application from: ${name}`,
-                    color: 3066993, // Blue-green color for applications
+                    color: 3066993,
                     fields: [
                         { name: "Applicant Name", value: name, inline: true },
                         { name: "Contact (Email/Discord/Phone)", value: contact, inline: true },
@@ -330,7 +313,6 @@
     }
 
 
-    // --- SUPABASE SETUP & DATA LISTENERS ---
 
     function setupSupabase() {
         if (!window.supabase || SUPABASE_URL.includes('your-supabase-project')) {
@@ -342,24 +324,20 @@
         try {
             supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
             
-            // Listen for authentication changes (New Auth Flow)
             supabase.auth.onAuthStateChange((event, session) => {
                 if (session?.user) {
                     isAdminAuthenticated = true;
-                    // Use the user's email or ID for clear identification
                     userId = session.user.email || session.user.id; 
                     console.log("User authenticated:", userId);
                 } else {
                     isAdminAuthenticated = false;
                     userId = 'public-view';
                 }
-                // Re-render the admin page if user logs in/out while viewing it
                 if (currentPage === 'admin') {
                     navigate('admin', true);
                 }
             });
             
-            // Initial data fetch
             fetchProjectsOnce(); 
         } catch (error) {
             console.error("Supabase client initialization failed:", error);
@@ -367,7 +345,6 @@
         }
     }
 
-    // FIX: Simplified data fetching, removing incorrect .subscribe usage
     async function fetchProjectsOnce() {
         if (!supabase) return;
         showLoading(true);
@@ -375,24 +352,21 @@
             const { data, error } = await supabase
                 .from(TABLE_NAME)
                 .select('*')
-                .order('timestamp', { ascending: false }); // Sort newest first
+                .order('timestamp', { ascending: false });
 
             if (error) {
-                 // Throw the error to be caught below
                  throw error;
             }
 
             projects = data || [];
             console.log("Projects loaded from Supabase:", projects.length);
             
-            // Re-render the current page if it's the Showcase or Admin page
             if (currentPage === 'showcase' || currentPage === 'admin') {
-                navigate(currentPage, false); // Re-render without changing nav state
+                navigate(currentPage, false);
             }
         } catch (error) {
             console.error("Error fetching projects:", error.message);
-            // Display an error message if loading fails severely
-            if (error.code !== '401') { // 401 on SELECT is uncommon, but 42501 could happen if RLS is wrong
+            if (error.code !== '401') {
                  showMessageBox('Data Error', `Failed to load projects: ${error.message}. Check RLS policy for 'SELECT'.`);
             }
         } finally {
@@ -400,7 +374,6 @@
         }
     }
 
-    // --- SUPABASE AUTHENTICATION FUNCTIONS (New) ---
     async function attemptAdminLogin() {
         const email = document.getElementById('admin-email').value;
         const password = document.getElementById('admin-password').value;
@@ -409,7 +382,6 @@
         messageElement.textContent = 'Logging in...';
 
         try {
-            // New Supabase Auth Sign-in
             const { error } = await supabase.auth.signInWithPassword({ email, password });
             
             if (error) {
@@ -418,7 +390,6 @@
                 return;
             }
 
-            // onAuthStateChange handles setting isAdminAuthenticated and navigation
             messageElement.textContent = 'Login successful! Redirecting...';
 
         } catch (error) {
@@ -439,15 +410,11 @@
     }
 
 
-    // --- CRUD OPERATIONS ---
-
-    // NEW: Helper function for uploading images to Supabase Storage
     async function uploadImage(file) {
         if (!supabase || !file) return null;
 
-        // Use a unique file path to prevent name collisions
         const filePath = `public/${Date.now()}-${file.name}`;
-        const BUCKET_NAME = 'user-uploads'; // <-- IMPORTANT: REPLACE WITH YOUR BUCKET NAME
+        const BUCKET_NAME = 'user-uploads';
 
         try {
             const { error: uploadError } = await supabase.storage
@@ -466,13 +433,11 @@
 
         } catch (error) {
             console.error('Error uploading image:', error.message);
-            // Re-throw the error to be caught by the form handler
             throw new Error(`Failed to upload ${file.name}: ${error.message}`);
         }
     }
 
     async function saveProject(projectId, data) {
-        // Now checks for proper Supabase authentication
         if (!isAdminAuthenticated || !supabase) {
             showMessageBox('Access Denied', 'You must be logged in as an administrator via email/password to perform this action.');
             return;
@@ -481,14 +446,12 @@
         try {
             let result;
             if (projectId) {
-                // Update
                 result = await supabase
                     .from(TABLE_NAME)
                     .update(data)
                     .eq('id', projectId)
                     .select();
             } else {
-                // Insert 
                 result = await supabase
                     .from(TABLE_NAME)
                     .insert(data)
@@ -498,7 +461,7 @@
             if (result.error) throw result.error;
             
             console.log("Project saved successfully.");
-            await fetchProjectsOnce(); // Explicitly re-fetch data after operation
+            await fetchProjectsOnce();
 
         } catch (error) {
             console.error("Error saving project:", error);
@@ -1133,6 +1096,7 @@
 
 </body>
 </html>
+
 
 
 
